@@ -4,9 +4,15 @@ import (
 	"html/template"
 	"net/http"
 	"path/filepath"
+
+	"snippetbox.org/pkg/models"
 )
 
-func (app *App) RenderHTML(w http.ResponseWriter, page string) {
+type HTMLData struct {
+	Snippet *models.Snippet
+}
+
+func (app *App) RenderHTML(w http.ResponseWriter, page string, data *HTMLData) {
 	files := []string{
 		filepath.Join(app.HTMLDir, "base.html"),
 		filepath.Join(app.HTMLDir, page),
@@ -18,7 +24,7 @@ func (app *App) RenderHTML(w http.ResponseWriter, page string) {
 		return
 	}
 
-	err = ts.ExecuteTemplate(w, "base", nil)
+	err = ts.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		app.ServerError(w, err)
 		return
