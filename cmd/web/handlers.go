@@ -11,7 +11,15 @@ func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.RenderHTML(w, "home.page.html", nil)
+	snippets, err := app.Database.GetLatestSnippets()
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
+
+	app.RenderHTML(w, r, "home.page.html", &HTMLData{
+		Snippets: snippets,
+	})
 }
 
 func (app *App) ShowSnippet(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +36,7 @@ func (app *App) ShowSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.RenderHTML(w, "show.page.html", &HTMLData{
+	app.RenderHTML(w, r, "show.page.html", &HTMLData{
 		Snippet: snippet,
 	})
 }
