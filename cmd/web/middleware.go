@@ -25,3 +25,20 @@ func SecureHeaders(next *pat.PatternServeMux) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func (app *App) RequireLogin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		loggedIn, err := app.LoggedIn(r)
+		if err != nil {
+			app.ServerError(w, err)
+			return
+		}
+
+		if !loggedIn {
+			http.Redirect(w, r, "/user/login", 302)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}

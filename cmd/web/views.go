@@ -13,6 +13,7 @@ import (
 type HTMLData struct {
 	Flash    string
 	Form     interface{}
+	LoggedIn bool
 	Path     string
 	Snippet  *models.Snippet
 	Snippets []*models.Snippet
@@ -24,6 +25,13 @@ func (app *App) RenderHTML(w http.ResponseWriter, r *http.Request, page string, 
 	}
 
 	data.Path = r.URL.Path
+
+	var err error
+	data.LoggedIn, err = app.LoggedIn(r)
+	if err != nil {
+		app.ServerError(w, err)
+		return
+	}
 
 	files := []string{
 		filepath.Join(app.HTMLDir, "base.html"),
