@@ -5,9 +5,11 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"time"
 
 	"go-snippetlab/pkg/models"
 
+	"github.com/alexedwards/scs"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -16,15 +18,22 @@ func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	dsn := flag.String("dsn", "root:@/snippetbox?parseTime=true", "MySQL DSN")
 	htmlDir := flag.String("html-dir", "./ui/html", "Path to HTML templates")
+	secret := flag.String("secret", "s6Nd%+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key")
 	staticDir := flag.String("static-dir", "./ui/static", "Path to static assets")
+
 	flag.Parse()
 
 	db := connect(*dsn)
 	defer db.Close()
 
+	sessionManager := scs.NewCookieManager(*secret)
+	sessionManager.Lifetime(12 * time.Hour)
+	sessionManager.Persist(true)
+
 	app := &App{
 		Database:  &models.Database{db},
 		HTMLDir:   *htmlDir,
+		Sessions:  sessionManager,
 		StaticDir: *staticDir,
 	}
 
