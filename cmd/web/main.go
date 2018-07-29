@@ -20,6 +20,8 @@ func main() {
 	htmlDir := flag.String("html-dir", "./ui/html", "Path to HTML templates")
 	secret := flag.String("secret", "s6Nd%+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key")
 	staticDir := flag.String("static-dir", "./ui/static", "Path to static assets")
+	tlsCert := flag.String("tls-cert", "./tls/cert.pem", "Path to TLS certificate")
+	tlsKey := flag.String("tls-key", "./tls/key.pem", "Path to TLS key")
 
 	flag.Parse()
 
@@ -29,6 +31,7 @@ func main() {
 	sessionManager := scs.NewCookieManager(*secret)
 	sessionManager.Lifetime(12 * time.Hour)
 	sessionManager.Persist(true)
+	sessionManager.Secure(true)
 
 	app := &App{
 		Database:  &models.Database{db},
@@ -38,7 +41,7 @@ func main() {
 	}
 
 	log.Printf("Starting server on %s", *addr)
-	err := http.ListenAndServe(*addr, app.Routes())
+	err := http.ListenAndServeTLS(*addr, *tlsCert, *tlsKey, app.Routes())
 
 	log.Fatal(err)
 }
