@@ -1,6 +1,6 @@
 package main
 
-import "snippetbox.org/pkg/models"
+import "go-snippetlab/pkg/models"
 
 type App struct {
 	Database  *models.Database
