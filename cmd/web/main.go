@@ -6,8 +6,9 @@ import (
 	"log"
 	"net/http"
 
+	"go-snippetlab/pkg/models"
+
 	_ "github.com/go-sql-driver/mysql"
-	"snippetbox.org/pkg/models"
 )
 
 func main() {

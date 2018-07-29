@@ -7,10 +7,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"snippetbox.org/pkg/models"
+	"go-snippetlab/pkg/models"
 )
 
 type HTMLData struct {
+	Form     interface{}
 	Path     string
 	Snippet  *models.Snippet
 	Snippets []*models.Snippet
