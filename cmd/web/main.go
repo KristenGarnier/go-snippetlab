@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"flag"
 	"log"
-	"net/http"
 	"time"
 
 	"go-snippetlab/pkg/models"
@@ -34,16 +33,17 @@ func main() {
 	sessionManager.Secure(true)
 
 	app := &App{
+		Addr:      *addr,
 		Database:  &models.Database{db},
 		HTMLDir:   *htmlDir,
 		Sessions:  sessionManager,
 		StaticDir: *staticDir,
+		TLSCert:   *tlsCert,
+		TLSKey:    *tlsKey,
 	}
 
-	log.Printf("Starting server on %s", *addr)
-	err := http.ListenAndServeTLS(*addr, *tlsCert, *tlsKey, app.Routes())
+	app.RunServer()
 
-	log.Fatal(err)
 }
 
 func connect(dsn string) *sql.DB {
